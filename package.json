@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node src/dist/app.js",
+    "start": "node src/build/app.js",
     "dev": "concurrently \"npx tsc -w\" \"nodemon src/build/app.js\""
   },
   "keywords": [],
@@ -18,6 +18,9 @@
   },
   "dependencies": {
     "express": "^4.18.3",
+    "mysql2": "^3.9.3",
+    "nodemon": "^3.1.0",
+    "sequelize": "^6.37.2",
     "ts-dotenv": "^0.9.1"
   }
 }

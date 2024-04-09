@@ -1,10 +1,15 @@
 {
 	"compilerOptions": {
 		"target": "ES2021",
-    "module": "CommonJS",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "outDir": "src/build",
-    "strictNullChecks": true
-	}
+        "module": "NodeNext",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "outDir": "./src/build",
+        "strictNullChecks": true,
+        "rootDir": "./src",
+        "experimentalDecorators": true
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
 }

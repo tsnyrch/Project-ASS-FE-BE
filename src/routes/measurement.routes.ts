@@ -2,10 +2,10 @@ import { Router } from "express";
 import { catchAsync } from "../utils/catchAsync";
 import { MeasurementController } from "../controllers/MeasurementController";
 
-const measurementRouter = Router();
-const measurementController = new MeasurementController();
+const router = Router();
+const controller = new MeasurementController();
 
-measurementRouter.route("/latest")
-    .get(catchAsync(measurementController.getLatestMeasurement));
+router.route("/latest")
+    .get(catchAsync(controller.getLatestMeasurement));
 
-export default measurementRouter;
+export default router;

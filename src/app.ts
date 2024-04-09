@@ -1,23 +1,31 @@
 import express, { Express, Request, Response } from "express";
 import { load } from "ts-dotenv";
+import { connect } from "./config/db.config";
+
 import { loadData } from "./services/loadData";
 
-import measurementRouter from "./routes/measurement.routes";
-import settingsRouter from "./routes/settings.routes";
+import measurementRoutes from "./routes/measurement.routes";
+import settingsRoutes from "./routes/settings.routes";
+import usersRoutes from "./routes/users.routes";
+import {errorHandler} from "./middleware/errorHandler";
 
 const app: Express = express();
+connect();
 
 const env = load({
     PORT: Number,
 });
 
-app.use("/measurement", measurementRouter);
-app.use("/settings", settingsRouter);
+app.use("/measurement", measurementRoutes);
+app.use("/settings", settingsRoutes);
+app.use("/users", usersRoutes);
 
-app.use("/", (req: Request, res: Response) => {
-    loadData();
+app.get("/", (req: Request, res: Response) => {
+    //loadData();
     res.send("Hello World");
 });
+
+app.use(errorHandler);
 
 app.listen(env.PORT, () => {
     console.log('server is listening on port ' + env.PORT)
