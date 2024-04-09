@@ -9,11 +9,6 @@ const controller: UserController = new UserController();
 
 router.route("/")
     .get(catchAsync(controller.getUsers))
-
-router.route("/delete")
-    .get((req, res) => {
-        User.destroy()
-        res.send("deleted");
-    })
+    .post(catchAsync(controller.createUser))
 
 export default router;

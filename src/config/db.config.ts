@@ -8,9 +8,13 @@ const env = load({
     DB_NAME: String
 })
 
-export const sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
+export const sequelize: Sequelize = new Sequelize(env.DB_NAME, env.DB_USER, env.DB_PASSWORD, {
     host: env.DB_HOST,
-    dialect: 'mysql'
+    dialect: 'mysql',
+    define: {
+        underscored: true,
+        timestamps: false
+    }
 });
 
 export const connect = () => {
