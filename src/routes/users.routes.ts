@@ -11,4 +11,13 @@ router.route("/")
     .get(catchAsync(controller.getUsers))
     .post(catchAsync(controller.createUser))
 
+router.route("/login")
+    .post(catchAsync(controller.login))
+
+router.route("/register")
+    .post(catchAsync(controller.register))
+
+router.route("/refreshToken")
+    .post(catchAsync(controller.refreshToken))
+
 export default router;

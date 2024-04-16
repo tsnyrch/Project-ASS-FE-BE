@@ -1,5 +1,3 @@
-import {Error} from "sequelize";
-
 export default class ResponseError extends Error {
     statusCode: number
     message: string

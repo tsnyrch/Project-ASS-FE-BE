@@ -7,7 +7,7 @@ import { loadData } from "./services/loadData";
 import measurementRoutes from "./routes/measurement.routes";
 import settingsRoutes from "./routes/settings.routes";
 import usersRoutes from "./routes/users.routes";
-import {errorHandler} from "./middleware/errorHandler";
+import { errorHandler } from "./middleware/errorHandler";
 import bodyParser from "body-parser";
 
 const app: Express = express();

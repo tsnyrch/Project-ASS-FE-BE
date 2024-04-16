@@ -5,11 +5,20 @@ export const errorHandler: ErrorRequestHandler = (err: ResponseError, req: Reque
     console.log(`error: ${err.message}`);
     next();
 
-    if (err.statusCode != null) {
-        res.statusCode = err.statusCode;
+    if (err.statusCode == null) {
+        err.statusCode = 500;
     }
-    res.json({
-        code: err.statusCode,
-        message: err.message
-    })
+    res.statusCode = err.statusCode;
+    
+    if (err.message.length != 0) {
+        res.json({
+            code: err.statusCode,
+            message: err.message
+        });
+    } else {
+        res.json({
+            code: err.statusCode,
+            stack: err.stack
+        })
+    }
 }

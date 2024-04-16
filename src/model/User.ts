@@ -1,5 +1,5 @@
 import { sequelize } from "../config/db.config";
-import {DataTypes, Model} from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import bcrypt from "bcrypt"
 
 export default class User extends Model {
@@ -9,6 +9,7 @@ export default class User extends Model {
     declare userName: string;
     declare password: string;
     declare isAdmin: boolean;
+    declare refreshToken: string;
 }
 
 User.init({
@@ -21,7 +22,8 @@ User.init({
     lastName: { type: DataTypes.STRING },
     userName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password: {
         type: DataTypes.STRING,
@@ -30,7 +32,8 @@ User.init({
     isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
-    }
+    },
+    refreshToken: { type: DataTypes.STRING }
 }, {
     sequelize
 });
