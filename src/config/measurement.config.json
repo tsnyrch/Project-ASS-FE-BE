@@ -1,8 +1,8 @@
 {
   "measurementFrequency": "60",
   "firstMeasurement": "1713264986",
-  "rgbCamera": "true",
-  "multispectralCamera": "true",
-  "numberOfSensors": "1",
-  "lengthOfAE": "60"
+  "rgbCamera": true,
+  "multispectralCamera": true,
+  "numberOfSensors": 2,
+  "lengthOfAE": 30
 }

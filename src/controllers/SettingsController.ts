@@ -1,23 +1,29 @@
 import { Request, Response } from 'express';
-
 import fs from "fs";
-import measurementConfig from "../config/measurement.config.json";
+import MeasurementConfig from "../model/MeasurementConfig";
+import ResponseError from "../utils/ResponseError";
 
 export class SettingsController {
-    updateMeasurementConfig = async (req: Request, res: Response) => {
-        const newValue: string = req.query.newValue as string;
-        if (newValue == null) {
-            res.json(measurementConfig);
-            return;
-        }
-        measurementConfig.firstParameter = newValue;
+    private measurementConfigPath = __dirname + "/../../config/measurement.config.json";
 
-        fs.writeFile(__dirname + "/../../config/measurement.config.json", JSON.stringify(measurementConfig, null, 2), (err) => {
+    getMeasurementConfig = async (req: Request, res: Response) => {
+        let rawData: string = fs.readFileSync(this.measurementConfigPath, 'utf8');
+        let actualConfig: MeasurementConfig = JSON.parse(rawData);
+        return res.json(actualConfig);
+    }
+
+    updateMeasurementConfig = async (req: Request, res: Response) => {
+        const newConfig: MeasurementConfig = req.body;
+        if (newConfig == null) {
+            throw new ResponseError("Invalid measurement config request body", 400);
+        }
+
+        fs.writeFile(this.measurementConfigPath, JSON.stringify(newConfig, null, 2), (err: Error) => {
             if (err) {
                 console.error(err);
                 return;
             } else {
-                res.json(measurementConfig);
+                res.json(newConfig);
             }
         });
     }

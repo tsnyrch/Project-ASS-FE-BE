@@ -5,7 +5,8 @@ import { SettingsController } from "../controllers/SettingsController";
 const router = Router();
 const controller = new SettingsController();
 
-router.route("/")
-    .get(catchAsync(controller.updateMeasurementConfig));
+router.route("/measurementConfig")
+    .get(catchAsync(controller.getMeasurementConfig))
+    .put(catchAsync(controller.updateMeasurementConfig));
 
 export default router;
