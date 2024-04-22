@@ -1,6 +1,6 @@
 export default interface MeasurementConfig {
-    measurementFrequency: string;
-    firstMeasurement: string;
+    measurementFrequency: number;
+    firstMeasurement: number;
     rgbCamera: boolean;
     multispectralCamera: boolean;
     numberOfSensors: number;

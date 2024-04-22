@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // app routes
-app.use("/measurement", measurementRoutes);
+app.use("/measurements", measurementRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/users", usersRoutes);
 

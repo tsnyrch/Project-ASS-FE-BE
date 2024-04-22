@@ -8,4 +8,7 @@ const controller = new MeasurementController();
 router.route("/latest")
     .get(catchAsync(controller.getLatestMeasurement));
 
+router.route("/history")
+    .get(catchAsync(controller.getMeasurementHistory));
+
 export default router;
