@@ -28,5 +28,47 @@
     "rgbCamera": true,
     "multispectralCamera": false,
     "numberOfSensors": 2
+  },
+  {
+    "dateTime": "2024-04-27T23:00:00",
+    "rgbCamera": true,
+    "multispectralCamera": false,
+    "numberOfSensors": 2
+  },
+  {
+    "dateTime": "2024-04-28T23:00:00",
+    "rgbCamera": false,
+    "multispectralCamera": true,
+    "numberOfSensors": 3
+  },
+  {
+    "dateTime": "2024-04-29T23:00:00",
+    "rgbCamera": true,
+    "multispectralCamera": true,
+    "numberOfSensors": 4
+  },
+  {
+    "dateTime": "2024-04-30T23:00:00",
+    "rgbCamera": false,
+    "multispectralCamera": false,
+    "numberOfSensors": 1
+  },
+  {
+    "dateTime": "2024-05-01T23:00:00",
+    "rgbCamera": true,
+    "multispectralCamera": false,
+    "numberOfSensors": 2
+  },
+  {
+    "dateTime": "2024-05-02T23:00:00",
+    "rgbCamera": false,
+    "multispectralCamera": true,
+    "numberOfSensors": 3
+  },
+  {
+    "dateTime": "2024-05-03T23:00:00",
+    "rgbCamera": true,
+    "multispectralCamera": true,
+    "numberOfSensors": 4
   }
 ]
