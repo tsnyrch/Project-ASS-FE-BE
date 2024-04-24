@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import User from "../model/User";
 import ResponseError from "../utils/ResponseError";
 import { generateAccessToken, generateRefreshToken, authEnv } from "../middleware/auth";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export default class UserController {
