@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express";
+import cors from 'cors';
 import { load } from "ts-dotenv";
 import { connect } from "./config/db.config";
 
@@ -16,6 +17,13 @@ connect();
 const env = load({
     PORT: Number,
 });
+
+// configure CORS
+const allowedOrigins = ["http://localhost:5173"];
+const options: cors.CorsOptions = {
+    origin: allowedOrigins
+};
+app.use(cors(options));
 
 // configure the app to use json parser
 app.use(express.json());

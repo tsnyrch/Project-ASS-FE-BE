@@ -1,15 +1,16 @@
 # BE-ASS-NSS-project
 
-npm i
+## Install dependencies
+npm install
 
-## start app
+## Start app
 npm run build\
 npm run start
 
-## start in dev mode -- needs nodemon
+## Start in dev mode -- needs nodemon
 npm run dev\
 
-## run with docker compose
+## Run with docker compose
 docker-compose build\
 docker-compose up
 
