@@ -9,5 +9,8 @@ npm run start
 ## start in dev mode -- needs nodemon
 npm run dev\
 
-## run with docker
-docker build -t ass_nss_bev .
+## run with docker compose
+docker-compose build\
+docker-compose up
+
+[//]: # ( &#40;docker build -t ass_nss_bev .&#41;)

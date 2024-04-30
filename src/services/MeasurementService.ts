@@ -1,19 +1,38 @@
-import MeasurementInfo from "../model/MeasurementInfo";
-import fs from "fs";
+import {sensorAcusticPath, sensorRgbPath} from "../config/be-v.config";
+import { ResponseStatus, ServiceResponse } from "./ServiceResponse";
 
 export class MeasurementService {
-    getLatestMeasurementInfo = async (): Promise<MeasurementInfo[]> => {
-        const measurements: MeasurementInfo[] = JSON.parse(fs.readFileSync(__dirname + "/../../../mock/mock_measurements_info.json", 'utf8'));
-        // Sort by newest date
-        measurements.sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime());
-        return measurements.slice(0, 5);
+
+    startAcusticMeasurement = async () => {
+        const res = await fetch(sensorAcusticPath + "/start");
+        const headerDate = res.headers && res.headers.get('date') ? res.headers.get('date') : 'no response date';
+        console.log('Status Code:', res.status);
+        console.log('Date in Response header:', headerDate);
+
+        if (!res.ok) {
+            return { status: ResponseStatus.ERROR, error: "Error starting measurement" } as ServiceResponse<string>;
+        }
+        return { status: ResponseStatus.SUCCESS, data: "Measurement started" } as ServiceResponse<string>;
     }
 
-    getMeasurementHistory = async (startDate: Date, endDate: Date): Promise<MeasurementInfo[]> => {
-        const measurements: MeasurementInfo[] = JSON.parse(fs.readFileSync(__dirname + "/../../../mock/mock_measurements_info.json", 'utf8'));
-        return measurements.filter((measurement) => {
-            const measurementDateTime = new Date(measurement.dateTime);
-            return measurementDateTime >= startDate && measurementDateTime <= endDate;
-        });
+    stopAcusticMeasurement = async () => {
+        const res = await fetch(sensorAcusticPath + "/stop");
+        console.log('Status Code:', res.status);
+        if (!res.ok) {
+            return { status: ResponseStatus.ERROR, error: "Error stopping measurement" } as ServiceResponse<string>;
+        }
+        return { status: ResponseStatus.SUCCESS, data: "Measurement stopped" } as ServiceResponse<string>;
+    }
+
+    startRgbMeasurement = async () => {
+        const res = await fetch(sensorRgbPath + "/start");
+        const headerDate = res.headers && res.headers.get('date') ? res.headers.get('date') : 'no response date';
+        console.log('Status Code:', res.status);
+        console.log('Date in Response header:', headerDate);
+
+        if (!res.ok) {
+            return { status: ResponseStatus.ERROR, error: "Error starting measurement" } as ServiceResponse<string>;
+        }
+        return { status: ResponseStatus.SUCCESS, data: "Measurement started" } as ServiceResponse<string>;
     }
 }

@@ -4,5 +4,5 @@
   "rgbCamera": true,
   "multispectralCamera": true,
   "numberOfSensors": 2,
-  "lengthOfAE": 30
+  "lengthOfAE": 2
 }

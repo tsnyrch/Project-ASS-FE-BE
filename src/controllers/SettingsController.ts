@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import fs from "fs";
 import MeasurementConfig from "../model/MeasurementConfig";
 import ResponseError from "../utils/ResponseError";
+import SettingsRepository from "../repositories/SettingsRepository";
 
 export class SettingsController {
     private measurementConfigPath = __dirname + "/../../config/measurement.config.json";
+    private repository = new SettingsRepository();
 
     getMeasurementConfig = async (req: Request, res: Response) => {
-        let rawData: string = fs.readFileSync(this.measurementConfigPath, 'utf8');
-        let actualConfig: MeasurementConfig = JSON.parse(rawData);
+        const actualConfig = await this.repository.getMeasurementConfig();
         return res.json(actualConfig);
     }
 

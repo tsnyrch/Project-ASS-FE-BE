@@ -1,12 +1,19 @@
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import {MeasurementService} from "../services/MeasurementService";
 import ResponseError from "../utils/ResponseError";
+import {MeasurementRepository} from "../repositories/MeasurementRepository";
+import { ResponseStatus } from "../services/ServiceResponse";
+import SettingsRepository from "../repositories/SettingsRepository";
+import MeasurementInfo from "../model/MeasurementInfo";
 
 export class MeasurementController {
     private service = new MeasurementService();
+    private repository: MeasurementRepository = new MeasurementRepository();
+    private settingsRepository = new SettingsRepository();
 
     getLatestMeasurement = async (req: Request, res: Response) => {
-        const latestMeasurementsInfo = await this.service.getLatestMeasurementInfo();
+        // TODO get data from database
+        const latestMeasurementsInfo = await this.repository.getLatestMeasurementInfo();
         return res.json({
             "lastBackup": new Date("2024-04-22T23:00:00"),
             "lastMeasurement": new Date("2024-04-23T09:20:00"),
@@ -26,7 +33,35 @@ export class MeasurementController {
             throw new ResponseError("Invalid date format", 400);
         }
 
-        const measurementsHistory = await this.service.getMeasurementHistory(startDate, endDate);
+        const measurementsHistory = await this.repository.getMeasurementHistory(startDate, endDate);
         return res.json(measurementsHistory);
+    }
+
+    startMeasurement = async (req: Request, res: Response) => {
+        const serviceAcusticResponse = await this.service.startAcusticMeasurement();
+        if (serviceAcusticResponse.status === ResponseStatus.ERROR) {
+            throw new ResponseError(serviceAcusticResponse.error, 500);
+        }
+
+        const config = await this.settingsRepository.getMeasurementConfig();
+        if (config.rgbCamera) {
+            const serviceRgbResponse = await this.service.startRgbMeasurement();
+            if (serviceRgbResponse.status === ResponseStatus.ERROR) {
+                throw new ResponseError(serviceRgbResponse.error, 500);
+            }
+        }
+
+        const newMeasurement = MeasurementInfo.build({
+            dateTime: new Date(),
+            rgbCamera: config.rgbCamera,
+            multispectralCamera: config.multispectralCamera,
+            numberOfSensors: config.numberOfSensors,
+            lengthOfAE: config.lengthOfAE,
+        });
+
+        setTimeout(() => {
+            this.service.stopAcusticMeasurement();
+            this.repository.createNewMeasurement(newMeasurement);
+        }, config.lengthOfAE * 60 * 1000);
     }
 }
