@@ -28,6 +28,9 @@ export default class UserController {
         return res.json({
             id: userId,
             userName: user.userName,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            isAdmin: user.isAdmin,
             accessToken: accessToken,
             refreshToken: refreshToken
         });
