@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { catchAsync } from "../utils/catchAsync";
 import { MeasurementController } from "../controllers/MeasurementController";
+import MeasurementInfo from "../model/MeasurementInfo";
 
 const router = Router();
 const controller = new MeasurementController();
@@ -13,5 +14,11 @@ router.route("/latest")
 
 router.route("/history")
     .get(catchAsync(controller.getMeasurementHistory));
+
+router.route("/all")
+    .get(catchAsync(async (req, res) =>  {
+        const data = await MeasurementInfo.findAll();
+        res.json(data);
+    }));
 
 export default router;

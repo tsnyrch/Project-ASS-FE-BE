@@ -19,6 +19,10 @@ export class SettingsController {
             throw new ResponseError("Invalid measurement config request body", 400);
         }
 
+        if (newConfig.measurementFrequency <= newConfig.lengthOfAE) {
+            throw new ResponseError("Measurement frequency must be greater than length of AE", 400);
+        }
+
         fs.writeFile(this.measurementConfigPath, JSON.stringify(newConfig, null, 2), (err: Error) => {
             if (err) {
                 console.error(err);

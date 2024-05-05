@@ -39,17 +39,18 @@ export class MeasurementController {
 
     startMeasurement = async (req: Request, res: Response) => {
         const serviceAcusticResponse = await this.service.startAcusticMeasurement();
-        if (serviceAcusticResponse.status === ResponseStatus.ERROR) {
-            throw new ResponseError(serviceAcusticResponse.error, 500);
-        }
+        // TODO uncomment
+        // if (serviceAcusticResponse.status === ResponseStatus.ERROR) {
+        //     throw new ResponseError(serviceAcusticResponse.error, 500);
+        // }
 
         const config = await this.settingsRepository.getMeasurementConfig();
-        if (config.rgbCamera) {
-            const serviceRgbResponse = await this.service.startRgbMeasurement();
-            if (serviceRgbResponse.status === ResponseStatus.ERROR) {
-                throw new ResponseError(serviceRgbResponse.error, 500);
-            }
-        }
+        // if (config.rgbCamera) {
+        //     const serviceRgbResponse = await this.service.startRgbMeasurement();
+        //     if (serviceRgbResponse.status === ResponseStatus.ERROR) {
+        //         throw new ResponseError(serviceRgbResponse.error, 500);
+        //     }
+        // }
 
         const newMeasurement = MeasurementInfo.build({
             dateTime: new Date(),
@@ -59,9 +60,10 @@ export class MeasurementController {
             lengthOfAE: config.lengthOfAE,
         });
 
-        setTimeout(() => {
-            this.service.stopAcusticMeasurement();
-            this.repository.createNewMeasurement(newMeasurement);
+        setTimeout(async () => {
+            await this.service.stopAcusticMeasurement();
+            const measurementRes = await this.repository.saveNewMeasurement(newMeasurement);
+            res.json(measurementRes);
         }, config.lengthOfAE * 60 * 1000);
     }
 }

@@ -3,13 +3,12 @@ import cors from 'cors';
 import { load } from "ts-dotenv";
 import { connect } from "./config/db.config";
 
-import { loadData } from "./services/loadData";
-
 import measurementRoutes from "./routes/measurement.routes";
 import settingsRoutes from "./routes/settings.routes";
 import usersRoutes from "./routes/users.routes";
 import { errorHandler } from "./middleware/errorHandler";
-import bodyParser from "body-parser";
+import SettingsRepository from "./repositories/SettingsRepository";
+import CronScheduler from "./services/CronScheduler";
 
 const app: Express = express();
 connect();
@@ -29,7 +28,6 @@ app.use(cors(options));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // app routes
 app.use("/measurements", measurementRoutes);
 app.use("/settings", settingsRoutes);
@@ -45,4 +43,9 @@ app.use(errorHandler);
 
 app.listen(env.PORT, () => {
     console.log('server is listening on port ' + env.PORT)
+});
+
+// setup cron job
+new SettingsRepository().getMeasurementConfig().then(config => {
+    CronScheduler.setNewSchedule(config.measurementFrequency);
 });

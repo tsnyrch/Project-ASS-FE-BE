@@ -19,7 +19,7 @@ export class MeasurementRepository {
         });
     }
 
-    createNewMeasurement = async (measurement: MeasurementInfo): Promise<MeasurementInfo> => {
-        return await MeasurementInfo.create({ measurement });
+    saveNewMeasurement = async (measurement: MeasurementInfo): Promise<MeasurementInfo> => {
+        return await measurement.save();
     }
 }
