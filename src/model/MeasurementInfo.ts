@@ -7,6 +7,7 @@ export default class MeasurementInfo extends Model {
     declare multispectralCamera: boolean
     declare numberOfSensors: number
     declare lengthOfAE: number
+    declare scheduled: boolean
 }
 
 MeasurementInfo.init({
@@ -34,6 +35,10 @@ MeasurementInfo.init({
     lengthOfAE: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    scheduled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 }, {
     sequelize

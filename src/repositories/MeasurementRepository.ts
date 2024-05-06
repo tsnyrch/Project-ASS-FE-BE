@@ -1,18 +1,26 @@
 import MeasurementInfo from "../model/MeasurementInfo";
-import fs from "fs";
+import {Op} from "sequelize";
 
-// TODO change from mock to database
 export class MeasurementRepository {
     private mockPath: string = __dirname + "/../../../mock/mock_measurements_info.json"
     getLatestMeasurementInfo = async (): Promise<MeasurementInfo[]> => {
-        const measurements: MeasurementInfo[] = JSON.parse(fs.readFileSync(this.mockPath, 'utf8'));
-        // Sort by newest date
-        measurements.sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime());
-        return measurements.slice(0, 5);
+        const measurements = await MeasurementInfo.findAll({
+            order: [
+                ['dateTime', 'DESC']
+            ],
+            limit: 5
+        });
+        return measurements;
     }
 
     getMeasurementHistory = async (startDate: Date, endDate: Date): Promise<MeasurementInfo[]> => {
-        const measurements: MeasurementInfo[] = JSON.parse(fs.readFileSync(this.mockPath, 'utf8'));
+        const measurements: MeasurementInfo[] = await MeasurementInfo.findAll({
+            where: {
+                dateTime: {
+                    [Op.between]: [startDate, endDate]
+                }
+            }
+        });
         return measurements.filter((measurement) => {
             const measurementDateTime = new Date(measurement.dateTime);
             return measurementDateTime >= startDate && measurementDateTime <= endDate;
@@ -21,5 +29,17 @@ export class MeasurementRepository {
 
     saveNewMeasurement = async (measurement: MeasurementInfo): Promise<MeasurementInfo> => {
         return await measurement.save();
+    }
+
+    getLastScheduled = async () => {
+        return await MeasurementInfo.findOne({
+            where: {
+                scheduled: true
+            },
+            order: [
+                ['dateTime', 'DESC']
+            ],
+            limit: 1
+        });
     }
 }
