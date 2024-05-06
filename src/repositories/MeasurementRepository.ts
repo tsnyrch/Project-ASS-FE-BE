@@ -19,7 +19,7 @@ export class MeasurementRepository {
         });
     }
 
-    getMeasurementById = async (id: String): Promise<MeasurementInfo | null> => {
+    getMeasurementById = async (id: Number): Promise<MeasurementInfo | null> => {
         try {
             return MeasurementInfo.findByPk(Number(id));
         } catch (error) {
