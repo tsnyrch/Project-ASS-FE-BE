@@ -37,6 +37,18 @@ export class MeasurementController {
         return res.json(measurementsHistory);
     }
 
+    getMeasurementById = async (req: Request, res: Response) => {
+        try {
+            const measurement = await this.repository.getMeasurementById(req.params.id)
+            if (measurement == null) {
+                res.status(404).send("Measurement not found");
+            }
+            return res.json(measurement);
+        } catch (error) {
+            res.status(500).send({error: error.message});
+        }
+    }
+
     startMeasurement = async (req: Request, res: Response) => {
         const serviceAcusticResponse = await this.service.startAcusticMeasurement();
         // TODO uncomment

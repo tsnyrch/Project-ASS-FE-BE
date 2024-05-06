@@ -19,6 +19,15 @@ export class MeasurementRepository {
         });
     }
 
+    getMeasurementById = async (id: String): Promise<MeasurementInfo | null> => {
+        try {
+            return MeasurementInfo.findByPk(Number(id));
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
+    }
+
     saveNewMeasurement = async (measurement: MeasurementInfo): Promise<MeasurementInfo> => {
         return await measurement.save();
     }
