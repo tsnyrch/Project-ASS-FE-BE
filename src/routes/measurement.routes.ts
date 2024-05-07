@@ -21,4 +21,7 @@ router.route("/all")
         res.json(data);
     }));
 
+router.route("/:id")
+    .get(catchAsync(controller.getMeasurementById));
+
 export default router;

@@ -6,6 +6,8 @@ import SettingsRepository from "../repositories/SettingsRepository";
 import MeasurementInfo from "../model/MeasurementInfo";
 import {ResponseStatus} from "../services/ServiceResponse";
 import CronScheduler from "../services/CronScheduler";
+import fs from "fs";
+import archiver from 'archiver';
 
 export class MeasurementController {
     private service = new MeasurementService();
@@ -37,6 +39,66 @@ export class MeasurementController {
 
         const measurementsHistory = await this.repository.getMeasurementHistory(startDate, endDate);
         return res.json(measurementsHistory);
+    }
+
+    getMeasurementById = async (req: Request, res: Response) => {
+        const id = parseInt(req.params.id);
+        try {
+            const measurement = await this.repository.getMeasurementById(id)
+            if (measurement == null) {
+                res.status(404).send("Measurement not found");
+            }
+
+            // TODO: - Use real data
+
+            const files = [
+                { name: `${id}_${measurement?.dateTime.getTime()}_EMISE.json`, content: JSON.stringify(({ message: 'EMISE_FILE' }))},
+                { name: `${id}_${measurement?.dateTime.getTime()}_RGB.json`, content: JSON.stringify(({ message: 'RGB_FILE' }))},
+                { name: `${id}_${measurement?.dateTime.getTime()}_HYPER.json`, content: JSON.stringify(({ message: 'HYPER_FILE' }))}
+            ]
+
+            const fileName = `measurement_${id}.zip`
+            const dir = './temp';
+            if (!fs.existsSync(dir)){
+                fs.mkdirSync(dir);
+            }
+
+            files.forEach(file => {
+                fs.writeFileSync(`${dir}/${file.name}`, file.content);
+            });
+
+            const output = fs.createWriteStream(`${dir}/${fileName}`);
+            const archive = archiver('zip', {
+                zlib: { level: 9 } // Sets the compression level.
+            });
+
+            output.on('close', function() {
+                res.download(`${dir}/${fileName}`, fileName, (err) => {
+                    // Cleanup: delete files after sending the response
+                    files.forEach(file => {
+                        fs.unlinkSync(`${dir}/${file.name}`);
+                    });
+                    fs.unlinkSync(`${dir}/result.zip`);
+                    fs.rmdirSync(dir);
+                });
+            });
+
+            archive.on('error', function(err) {
+                throw err;
+            });
+
+            archive.pipe(output);
+
+            files.forEach(file => {
+                archive.append(fs.createReadStream(`${dir}/${file.name}`), { name: file.name });
+            });
+
+            archive.finalize();
+
+            return archive;
+        } catch (error) {
+            res.status(500).send({error: error.message});
+        }
     }
 
     startMeasurement = async (req: Request, res: Response) => {
