@@ -1,23 +1,37 @@
 import cron from 'node-cron';
+import {MeasurementController} from "../controllers/MeasurementController";
 
 export default class CronScheduler {
-    // cron
-    static task: cron.ScheduledTask | null = null;
-    private static minutesInterval: number = 0;
-    private static job = () => {
-        console.log("Job is running every " + this.minutesInterval + " minutes");
-    }
+    private static instance: CronScheduler;
 
-    static start() {
-        if (this.task == null) {
-            return
+    private constructor() {}
+
+    public static getInstance(): CronScheduler {
+        if (!CronScheduler.instance) {
+            CronScheduler.instance = new CronScheduler();
         }
-        this.task.start();
+
+        return CronScheduler.instance;
     }
 
-    static setNewSchedule(minutesInterval: number) {
+    private task: cron.ScheduledTask | null = null;
+    private minutesInterval: number = 0;
+    private measurementController = new MeasurementController();
+
+    public nextScheduledDate: Date | null = null;
+
+    private job = () => {
+        console.log("Running automatic measurement at: " + new Date() + ", interval: " + this.minutesInterval + " minutes");
+        this.nextScheduledDate = new Date(new Date().getTime() + this.minutesInterval * 60 * 1000);
+        this.measurementController.startMeasurementLogic(true).then(r => {
+            console.log("Automatic measurement finished");
+            console.log(r.dataValues);
+        });
+    }
+
+    public setNewSchedule = (minutesInterval: number, startTime: Date = new Date()) => {
         if (minutesInterval <= 0) {
-            console.log("Invalid interval");
+            console.log("No automatic measurement scheduled");
             return;
         }
         this.minutesInterval = minutesInterval;
@@ -25,9 +39,27 @@ export default class CronScheduler {
         if (minutesInterval < 1) {
             cronExpression = `*/${minutesInterval} * * * * *`;
         }
-        this.task = cron.schedule(cronExpression, this.job, {
+
+        // Calculate the time difference between now and the start time
+        const now = new Date();
+        const delay = startTime.getTime() - now.getTime();
+
+        const cronTask = cron.schedule(cronExpression, this.job, {
             scheduled: true,
             name: "measurement-task"
         });
+
+        // If the start time is in the future, delay the start of the cron job
+        if (delay > 0) {
+            console.log("Automatic measurement scheduled at: " + startTime + ", interval: " + minutesInterval + " minutes");
+            this.nextScheduledDate = startTime;
+            setTimeout(() => {
+                this.task = cronTask;
+            }, delay);
+        } else {
+            console.log("Next measurement in " + minutesInterval + " minutes");
+            this.nextScheduledDate = new Date(now.getTime() + minutesInterval * 60 * 1000);
+            this.task = cronTask;
+        }
     }
 }

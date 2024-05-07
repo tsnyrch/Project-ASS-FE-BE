@@ -2,9 +2,10 @@ import {Request, Response} from 'express';
 import {MeasurementService} from "../services/MeasurementService";
 import ResponseError from "../utils/ResponseError";
 import {MeasurementRepository} from "../repositories/MeasurementRepository";
-import { ResponseStatus } from "../services/ServiceResponse";
 import SettingsRepository from "../repositories/SettingsRepository";
 import MeasurementInfo from "../model/MeasurementInfo";
+import {ResponseStatus} from "../services/ServiceResponse";
+import CronScheduler from "../services/CronScheduler";
 import fs from "fs";
 import archiver from 'archiver';
 
@@ -14,12 +15,13 @@ export class MeasurementController {
     private settingsRepository = new SettingsRepository();
 
     getLatestMeasurement = async (req: Request, res: Response) => {
-        // TODO get data from database
         const latestMeasurementsInfo = await this.repository.getLatestMeasurementInfo();
+        let plannedMeasurement: Date | null = CronScheduler.getInstance().nextScheduledDate;
+
         return res.json({
             "lastBackup": new Date("2024-04-22T23:00:00"),
-            "lastMeasurement": new Date("2024-04-23T09:20:00"),
-            "plannedMeasurement": new Date("2024-04-23T10:20:00"),
+            "lastMeasurement": latestMeasurementsInfo ? latestMeasurementsInfo[0].dateTime : null,
+            "plannedMeasurement": plannedMeasurement,
             "latestMeasurement": latestMeasurementsInfo
         });
     }
@@ -100,13 +102,27 @@ export class MeasurementController {
     }
 
     startMeasurement = async (req: Request, res: Response) => {
-        const serviceAcusticResponse = await this.service.startAcusticMeasurement();
-        // TODO uncomment
+        const measurementRes = await this.startMeasurementLogic();
+        res.json(measurementRes);
+    }
+
+    startMeasurementLogic = async (scheduled = false) => {
+        const config = await this.settingsRepository.getMeasurementConfig();
+        const newMeasurement = MeasurementInfo.build({
+            dateTime: new Date(),
+            rgbCamera: config.rgbCamera,
+            multispectralCamera: config.multispectralCamera,
+            numberOfSensors: config.numberOfSensors,
+            lengthOfAE: config.lengthOfAE,
+            scheduled: scheduled
+        });
+
+        // const serviceAcusticResponse = await this.service.startAcusticMeasurement();
+        // // TODO uncomment
         // if (serviceAcusticResponse.status === ResponseStatus.ERROR) {
         //     throw new ResponseError(serviceAcusticResponse.error, 500);
         // }
 
-        const config = await this.settingsRepository.getMeasurementConfig();
         // if (config.rgbCamera) {
         //     const serviceRgbResponse = await this.service.startRgbMeasurement();
         //     if (serviceRgbResponse.status === ResponseStatus.ERROR) {
@@ -114,18 +130,8 @@ export class MeasurementController {
         //     }
         // }
 
-        const newMeasurement = MeasurementInfo.build({
-            dateTime: new Date(),
-            rgbCamera: config.rgbCamera,
-            multispectralCamera: config.multispectralCamera,
-            numberOfSensors: config.numberOfSensors,
-            lengthOfAE: config.lengthOfAE,
-        });
-
-        setTimeout(async () => {
-            await this.service.stopAcusticMeasurement();
-            const measurementRes = await this.repository.saveNewMeasurement(newMeasurement);
-            res.json(measurementRes);
-        }, config.lengthOfAE * 60 * 1000);
+        await new Promise(resolve => setTimeout(resolve, config.lengthOfAE * 60 * 1000));
+        //await this.service.stopAcusticMeasurement();
+        return await this.repository.saveNewMeasurement(newMeasurement);
     }
 }

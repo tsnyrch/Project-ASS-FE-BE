@@ -47,5 +47,5 @@ app.listen(env.PORT, () => {
 
 // setup cron job
 new SettingsRepository().getMeasurementConfig().then(config => {
-    CronScheduler.setNewSchedule(config.measurementFrequency);
+    CronScheduler.getInstance().setNewSchedule(config.measurementFrequency, new Date(config.firstMeasurement));
 });
