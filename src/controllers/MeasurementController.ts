@@ -18,7 +18,7 @@ export class MeasurementController {
 
         return res.json({
             "lastBackup": new Date("2024-04-22T23:00:00"),
-            "lastMeasurement": latestMeasurementsInfo ? latestMeasurementsInfo[0].dateTime : null,
+            "lastMeasurement": latestMeasurementsInfo.length > 0 ? latestMeasurementsInfo[0].dateTime : null,
             "plannedMeasurement": plannedMeasurement,
             "latestMeasurement": latestMeasurementsInfo
         });
