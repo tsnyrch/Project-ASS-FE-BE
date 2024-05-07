@@ -1,5 +1,6 @@
 import { Sequelize } from "sequelize";
 import { load } from "ts-dotenv";
+import { seedUser } from "../utils/seedUser";
 
 const env = load({
     DB_HOST: String,

@@ -9,6 +9,7 @@ import usersRoutes from "./routes/users.routes";
 import { errorHandler } from "./middleware/errorHandler";
 import SettingsRepository from "./repositories/SettingsRepository";
 import CronScheduler from "./services/CronScheduler";
+import { seedUser } from "./utils/seedUser";
 
 const app: Express = express();
 connect();
@@ -49,3 +50,7 @@ app.listen(env.PORT, () => {
 new SettingsRepository().getMeasurementConfig().then(config => {
     CronScheduler.getInstance().setNewSchedule(config.measurementFrequency, new Date(config.firstMeasurement));
 });
+
+
+// seed user
+seedUser();
