@@ -35,6 +35,9 @@ export class SettingsController {
             CronScheduler.getInstance().setNewSchedule(newConfig.measurementFrequency, new Date(newConfig.firstMeasurement));
         }
 
+        // TODO - change this after multispectral is functional
+        newConfig.multispectralCamera = false;
+
         fs.writeFile(this.measurementConfigPath, JSON.stringify(newConfig, null, 2), (err: Error) => {
             if (err) {
                 console.error(err);

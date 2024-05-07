@@ -1,8 +1,8 @@
 {
-  "measurementFrequency": 3,
+  "measurementFrequency": 60,
   "firstMeasurement": "2024-05-06T10:00:00",
   "rgbCamera": true,
-  "multispectralCamera": true,
+  "multispectralCamera": false,
   "numberOfSensors": 2,
   "lengthOfAE": 0.5
 }

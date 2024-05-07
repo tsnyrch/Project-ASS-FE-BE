@@ -44,22 +44,22 @@ export default class CronScheduler {
         const now = new Date();
         const delay = startTime.getTime() - now.getTime();
 
+        const cronTask = cron.schedule(cronExpression, this.job, {
+            scheduled: true,
+            name: "measurement-task"
+        });
+
         // If the start time is in the future, delay the start of the cron job
         if (delay > 0) {
             console.log("Automatic measurement scheduled at: " + startTime + ", interval: " + minutesInterval + " minutes");
             this.nextScheduledDate = startTime;
             setTimeout(() => {
-                this.task = cron.schedule(cronExpression, this.job, {
-                    scheduled: true,
-                    name: "measurement-task"
-                });
+                this.task = cronTask;
             }, delay);
         } else {
+            console.log("Next measurement in " + minutesInterval + " minutes");
             this.nextScheduledDate = new Date(now.getTime() + minutesInterval * 60 * 1000);
-            this.task = cron.schedule(cronExpression, this.job, {
-                scheduled: true,
-                name: "measurement-task"
-            });
+            this.task = cronTask;
         }
     }
 }
