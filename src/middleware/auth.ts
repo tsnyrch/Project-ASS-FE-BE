@@ -2,6 +2,7 @@ import jwt, { Secret } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 
 import { load } from 'ts-dotenv';
+import User from "../model/User";
 
 export const authEnv = load({
     ACCESS_TOKEN_SECRET: String,
@@ -36,11 +37,12 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-
-export function generateAccessToken(userId: number, userName: string): string {
+export function generateAccessToken(user: User): string {
     return jwt.sign({ 
-        id: userId, 
-        userName: userName 
+        id: user.id,
+        userName: user.userName,
+        firstName: user.firstName,
+        lastName: user.lastName
     }, 
     authEnv.ACCESS_TOKEN_SECRET, { 
         expiresIn: '5m'

@@ -22,7 +22,7 @@ export default class UserController {
     }
 
     private sendLoginResponse = (user: User, userId: number, res: Response) => {
-        const accessToken = generateAccessToken(userId, user.userName);
+        const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(userId);
         this.repository.updateUserRefreshToken(userId, refreshToken);
         return res.json({
@@ -89,7 +89,7 @@ export default class UserController {
             throw new ResponseError("Invalid refresh token", 401);
         }
 
-        const accessToken = generateAccessToken(foundUser.id, foundUser.userName);
+        const accessToken = generateAccessToken(foundUser);
         const newRefreshToken = generateRefreshToken(foundUser.id);;
         await this.repository.updateUserRefreshToken(foundUser.id, newRefreshToken);
 

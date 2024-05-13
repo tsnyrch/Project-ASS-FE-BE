@@ -39,6 +39,22 @@ app.get("/", (req: Request, res: Response) => {
     res.send("Hello World");
 });
 
+app.get('/ben', async (req: Request, res: Response) => {
+    try {
+        const response = await fetch('http://localhost:5000');
+        const data = await response.json();
+        res.json({
+            data: data,
+            message: "success"
+        });
+    } catch (error) {
+        res.json({ 
+            error: error,
+            stack: error.stackx
+        });
+    }
+});
+
 // error handler
 app.use(errorHandler);
 
