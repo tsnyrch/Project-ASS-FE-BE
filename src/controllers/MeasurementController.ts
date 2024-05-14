@@ -4,10 +4,10 @@ import ResponseError from "../utils/ResponseError";
 import {MeasurementRepository} from "../repositories/MeasurementRepository";
 import SettingsRepository from "../repositories/SettingsRepository";
 import MeasurementInfo from "../model/MeasurementInfo";
-import {ResponseStatus} from "../services/ServiceResponse";
 import CronScheduler from "../services/CronScheduler";
 import fs from "fs";
 import archiver from 'archiver';
+import {ResponseStatus} from "../services/ServiceResponse";
 
 export class MeasurementController {
     private service = new MeasurementService();
@@ -102,13 +102,17 @@ export class MeasurementController {
     }
 
     startMeasurement = async (req: Request, res: Response) => {
+        // const response = await fetch("http://localhost:5000");
+        // console.log(response);
+        // return res.json({message: "Measurement started"});
+
         const measurementRes = await this.startMeasurementLogic();
         res.json(measurementRes);
     }
 
     startMeasurementLogic = async (scheduled = false) => {
         const config = await this.settingsRepository.getMeasurementConfig();
-        const newMeasurement = MeasurementInfo.build({
+        const newMeasurement = await MeasurementInfo.create({
             dateTime: new Date(),
             rgbCamera: config.rgbCamera,
             multispectralCamera: config.multispectralCamera,
@@ -116,22 +120,33 @@ export class MeasurementController {
             lengthOfAE: config.lengthOfAE,
             scheduled: scheduled
         });
+        console.log(newMeasurement.id);
 
+        if (config.rgbCamera) {
+            const serviceRgbResponse = await this.service.startRgbMeasurement(newMeasurement.id, newMeasurement.dateTime, 1);
+            if (serviceRgbResponse.status === ResponseStatus.ERROR) {
+                await this.repository.deleteNewMeasurement(newMeasurement);
+                throw new ResponseError(serviceRgbResponse.error, 500);
+            }
+        }
+
+        // ACUSTIC
         // const serviceAcusticResponse = await this.service.startAcusticMeasurement();
-        // // TODO uncomment
         // if (serviceAcusticResponse.status === ResponseStatus.ERROR) {
+        //     await this.repository.deleteNewMeasurement(newMeasurement);
         //     throw new ResponseError(serviceAcusticResponse.error, 500);
         // }
-
+        // await new Promise(resolve => setTimeout(resolve, config.lengthOfAE * 60 * 1000));
+        // await this.service.stopAcusticMeasurement();
+        //
         // if (config.rgbCamera) {
-        //     const serviceRgbResponse = await this.service.startRgbMeasurement();
+        //     const serviceRgbResponse = await this.service.startRgbMeasurement(newMeasurement.id, newMeasurement.dateTime, 2);
         //     if (serviceRgbResponse.status === ResponseStatus.ERROR) {
+        //         await this.repository.deleteNewMeasurement(newMeasurement);
         //         throw new ResponseError(serviceRgbResponse.error, 500);
         //     }
         // }
 
-        await new Promise(resolve => setTimeout(resolve, config.lengthOfAE * 60 * 1000));
-        //await this.service.stopAcusticMeasurement();
         return await this.repository.saveNewMeasurement(newMeasurement);
     }
 }

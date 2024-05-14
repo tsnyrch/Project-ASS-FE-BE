@@ -40,6 +40,10 @@ export class MeasurementRepository {
         return await measurement.save();
     }
 
+    deleteNewMeasurement = async (measurement): Promise<void> => {
+        await measurement.destroy({ truncate: true, restartIdentity: true });
+    }
+
     getLastScheduled = async () => {
         return await MeasurementInfo.findOne({
             where: {
@@ -50,5 +54,15 @@ export class MeasurementRepository {
             ],
             limit: 1
         });
+    }
+
+    getLastId = async () => {
+        const mes = await MeasurementInfo.findOne({
+            order: [
+                ['id', 'DESC']
+            ],
+            limit: 1
+        });
+        return mes?.id ?? 0;
     }
 }

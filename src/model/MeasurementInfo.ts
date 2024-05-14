@@ -2,6 +2,7 @@ import {DataTypes, Model} from "sequelize";
 import {sequelize} from "../config/db.config";
 
 export default class MeasurementInfo extends Model {
+    declare id: number
     declare dateTime: Date
     declare rgbCamera: boolean
     declare multispectralCamera: boolean
