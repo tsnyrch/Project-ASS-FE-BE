@@ -23,10 +23,14 @@ export default class CronScheduler {
     private job = () => {
         console.log("Running automatic measurement at: " + new Date() + ", interval: " + this.minutesInterval + " minutes");
         this.nextScheduledDate = new Date(new Date().getTime() + this.minutesInterval * 60 * 1000);
-        this.measurementController.startMeasurementLogic(true).then(r => {
-            console.log("Automatic measurement finished");
-            console.log(r.dataValues);
-        });
+        try {
+            this.measurementController.startMeasurementLogic(true).then(r => {
+                console.log("Automatic measurement finished");
+                console.log(r.dataValues);
+            });
+        } catch (error) {
+            console.error("Error in automatic measurement: " + error);
+        }
     }
 
     public setNewSchedule = (minutesInterval: number, startTime: Date = new Date()) => {

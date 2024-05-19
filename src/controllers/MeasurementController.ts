@@ -43,69 +43,49 @@ export class MeasurementController {
 
     getMeasurementById = async (req: Request, res: Response) => {
         const id = parseInt(req.params.id);
-        try {
-            const measurement = await this.repository.getMeasurementById(id)
-            if (measurement == null) {
-                res.status(404).send("Measurement not found");
-            }
 
-            // TODO: - Use real data
-
-            const files = [
-                { name: `${id}_${measurement?.dateTime.getTime()}_EMISE.json`, content: JSON.stringify(({ message: 'EMISE_FILE' }))},
-                { name: `${id}_${measurement?.dateTime.getTime()}_RGB.json`, content: JSON.stringify(({ message: 'RGB_FILE' }))},
-                { name: `${id}_${measurement?.dateTime.getTime()}_HYPER.json`, content: JSON.stringify(({ message: 'HYPER_FILE' }))}
-            ]
-
-            const fileName = `measurement_${id}.zip`
-            const dir = './temp';
-            if (!fs.existsSync(dir)){
-                fs.mkdirSync(dir);
-            }
-
-            files.forEach(file => {
-                fs.writeFileSync(`${dir}/${file.name}`, file.content);
-            });
-
-            const output = fs.createWriteStream(`${dir}/${fileName}`);
-            const archive = archiver('zip', {
-                zlib: { level: 9 } // Sets the compression level.
-            });
-
-            output.on('close', function() {
-                res.download(`${dir}/${fileName}`, fileName, (err) => {
-                    // Cleanup: delete files after sending the response
-                    files.forEach(file => {
-                        fs.unlinkSync(`${dir}/${file.name}`);
-                    });
-                    fs.unlinkSync(`${dir}/result.zip`);
-                    fs.rmdirSync(dir);
-                });
-            });
-
-            archive.on('error', function(err) {
-                throw err;
-            });
-
-            archive.pipe(output);
-
-            files.forEach(file => {
-                archive.append(fs.createReadStream(`${dir}/${file.name}`), { name: file.name });
-            });
-
-            archive.finalize();
-
-            return archive;
-        } catch (error) {
-            res.status(500).send({error: error.message});
+        const measurement = await this.repository.getMeasurementById(id)
+        if (measurement == null) {
+            return res.status(404).send("Measurement not found");
         }
+
+        // TODO: - Use real data
+
+        const dir = './mock'; // Replace with the path to your files
+        const files = fs.readdirSync(dir).filter(file =>
+            file.endsWith('.png') && file.startsWith(`${id}_${measurement.dateTime.toISOString().replaceAll(":", "-")}`)
+        );
+
+        const fileName = `measurement_${id}.zip`;
+
+        const output = fs.createWriteStream(`${dir}/${fileName}`);
+        const archive = archiver('zip', {
+            zlib: { level: 9 } // Sets the compression level.
+        });
+
+        output.on('close', function() {
+            res.download(`${dir}/${fileName}`, fileName, (err) => {
+                // Cleanup: delete the ZIP file after sending the response
+                fs.unlinkSync(`${dir}/${fileName}`);
+            });
+        });
+
+        archive.on('error', function(err) {
+            throw err;
+        });
+
+        archive.pipe(output);
+
+        files.forEach(file => {
+            archive.append(fs.createReadStream(`${dir}/${file}`), { name: file });
+        });
+
+        archive.finalize();
+
+        return archive;
     }
 
     startMeasurement = async (req: Request, res: Response) => {
-        // const response = await fetch("http://localhost:5000");
-        // console.log(response);
-        // return res.json({message: "Measurement started"});
-
         const measurementRes = await this.startMeasurementLogic();
         res.json(measurementRes);
     }
@@ -123,7 +103,9 @@ export class MeasurementController {
         console.log(newMeasurement.id);
 
         if (config.rgbCamera) {
-            const serviceRgbResponse = await this.service.startRgbMeasurement(newMeasurement.id, newMeasurement.dateTime, 1);
+            const serviceRgbResponse = await this.service.startRgbMeasurement(
+                newMeasurement.id, newMeasurement.dateTime, 1
+            );
             if (serviceRgbResponse.status === ResponseStatus.ERROR) {
                 await this.repository.deleteNewMeasurement(newMeasurement);
                 throw new ResponseError(serviceRgbResponse.error, 500);

@@ -90,7 +90,7 @@ export default class UserController {
         }
 
         const accessToken = generateAccessToken(foundUser);
-        const newRefreshToken = generateRefreshToken(foundUser.id);;
+        const newRefreshToken = generateRefreshToken(foundUser.id);
         await this.repository.updateUserRefreshToken(foundUser.id, newRefreshToken);
 
         res.json({ 

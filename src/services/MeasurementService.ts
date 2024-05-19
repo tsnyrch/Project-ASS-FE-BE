@@ -27,7 +27,7 @@ export class MeasurementService {
     startRgbMeasurement = async (id: number, date: Date, imageNumber: number) => {
         const rgbConf = {
             path: "path",
-            name: `${id}_${date.toISOString()}_rgb_${imageNumber}`,
+            name: `${id}_${date.toISOString().replaceAll(":", "-")}_rgb_${imageNumber}`,
             quality: 100,
             image_format: "png"
         }

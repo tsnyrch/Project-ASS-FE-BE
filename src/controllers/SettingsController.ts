@@ -6,7 +6,6 @@ import SettingsRepository from "../repositories/SettingsRepository";
 import CronScheduler from "../services/CronScheduler";
 
 export class SettingsController {
-    private measurementConfigPath = __dirname + "/../../config/measurement.config.json";
     private repository = new SettingsRepository();
 
     getMeasurementConfig = async (req: Request, res: Response) => {
@@ -38,7 +37,7 @@ export class SettingsController {
         // TODO - change this after multispectral is functional
         newConfig.multispectralCamera = false;
 
-        fs.writeFile(this.measurementConfigPath, JSON.stringify(newConfig, null, 2), (err: Error) => {
+        fs.writeFile(this.repository.measurementConfigPath, JSON.stringify(newConfig, null, 2), (err: Error) => {
             if (err) {
                 console.error(err);
                 return;
