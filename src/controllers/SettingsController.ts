@@ -15,6 +15,8 @@ export class SettingsController {
 
     updateMeasurementConfig = async (req: Request, res: Response) => {
         const newConfig: MeasurementConfig = req.body;
+        newConfig.measurementFrequency = parseInt(newConfig.measurementFrequency.toString());
+
         const oldConfig = await this.repository.getMeasurementConfig();
         if (newConfig == null) {
             throw new ResponseError("Invalid measurement config request body", 400);
@@ -28,9 +30,7 @@ export class SettingsController {
             throw new ResponseError("Measurement frequency must be greater than length of AE", 400);
         }
 
-        if (newConfig.measurementFrequency != oldConfig.measurementFrequency ||
-            newConfig.firstMeasurement != oldConfig.firstMeasurement
-        ) {
+        if (newConfig.measurementFrequency != oldConfig.measurementFrequency) {
             CronScheduler.getInstance().setNewSchedule(newConfig.measurementFrequency, new Date(newConfig.firstMeasurement));
         }
 

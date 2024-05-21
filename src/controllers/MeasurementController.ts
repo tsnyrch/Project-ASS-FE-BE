@@ -51,7 +51,7 @@ export class MeasurementController {
 
         // TODO: - Use real data
 
-        const dir = './mock'; // Replace with the path to your files
+        const dir: string = './mock';
         const files = fs.readdirSync(dir).filter(file =>
             file.endsWith('.png') && file.startsWith(`${id}_${measurement.dateTime.toISOString().replaceAll(":", "-")}`)
         );
@@ -102,15 +102,15 @@ export class MeasurementController {
         });
         console.log(newMeasurement.id);
 
-        if (config.rgbCamera) {
-            const serviceRgbResponse = await this.service.startRgbMeasurement(
-                newMeasurement.id, newMeasurement.dateTime, 1
-            );
-            if (serviceRgbResponse.status === ResponseStatus.ERROR) {
-                await this.repository.deleteNewMeasurement(newMeasurement);
-                throw new ResponseError(serviceRgbResponse.error, 500);
-            }
-        }
+        // if (config.rgbCamera) {
+        //     const serviceRgbResponse = await this.service.startRgbMeasurement(
+        //         newMeasurement.id, newMeasurement.dateTime, 1
+        //     );
+        //     if (serviceRgbResponse.status === ResponseStatus.ERROR) {
+        //         await this.repository.deleteNewMeasurement(newMeasurement);
+        //         throw new ResponseError(serviceRgbResponse.error, 500);
+        //     }
+        // }
 
         // ACUSTIC
         // const serviceAcusticResponse = await this.service.startAcusticMeasurement();

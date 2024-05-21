@@ -19,9 +19,8 @@ const env = load({
 });
 
 // configure CORS
-const allowedOrigins = ["http://localhost:5173"];
 const options: cors.CorsOptions = {
-    origin: allowedOrigins
+    origin: "*"
 };
 app.use(cors(options));
 
@@ -50,7 +49,7 @@ app.get('/ben', async (req: Request, res: Response) => {
     } catch (error) {
         res.json({ 
             error: error,
-            stack: error.stackx
+            stack: error.stack
         });
     }
 });
