@@ -1,15 +1,14 @@
 {
-	"compilerOptions": {
-		"target": "ES2021",
-        "module": "NodeNext",
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "outDir": "./src/build",
-        "strictNullChecks": true,
-        "rootDir": "./src",
-        "experimentalDecorators": true
-    },
-    "include": [
-        "src/**/*.ts"
-    ]
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "CommonJS",
+    "outDir": "./src/build",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

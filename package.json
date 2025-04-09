@@ -6,14 +6,15 @@
   "scripts": {
     "build": "tsc",
     "start": "node src/build/app.js",
-    "dev": "concurrently \"npx tsc -w\" \"nodemon src/build/app.js\"",
-    "docker-run": "docker run -p 3000:3000 ass_nss_bev"
+    "dev": "concurrently \"npx tsc -w\" \"nodemon src/build/app.js\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "nodemonConfig": {
-    "ignore": ["src/config/*.json"]
+    "ignore": [
+      "src/config/*.json"
+    ]
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
